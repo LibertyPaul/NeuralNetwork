@@ -53,9 +53,36 @@ void NeuralNetwork::initialize(const std::vector<double> &values){
 	if(values.size() != this->inputLayer.size())
 		throw std::runtime_error("Incorrect initialising vector size");
 
+	this->reset();
 	for(size_t i = 0; i < values.size(); ++i){
 		this->inputLayer.at(i)->initialize(values.at(i));
 	}
+}
+
+void NeuralNetwork::reset(){
+	for(auto neuron : this->inputLayer)
+		neuron->reset();
+
+	for(auto hiddenLayer : this->hiddenNeurons)
+		for(auto neuron : hiddenLayer)
+			neuron->reset();
+
+	for(auto neuron : this->outputLayer)
+		neuron->reset();
+
+}
+
+double NeuralNetwork::calcMSE(const std::vector<double> &output, const std::vector<double> &model) const{
+	if(output.size() != model.size())
+		throw std::runtime_error("different vector sizes");
+
+	double result = 0;
+	for(size_t i = 0; i < model.size(); ++i){
+		result += std::pow(model.at(i) - output.at(i), 2);
+	}
+	result /= model.size();
+
+	return result;
 }
 
 std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
@@ -71,10 +98,25 @@ std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
 	result.reserve(this->outputLayer.size());
 
 	for(const auto outputNeuron : this->outputLayer)
-		result.push_back(outputNeuron->getSignal());
+		result.push_back(outputNeuron->calcSignal());
 
 	return result;
 }
+
+
+double NeuralNetwork::teach(const std::vector<double> &input, const std::vector<double> &model){
+	std::vector<double> output = this->run(input);
+
+	//тут обратное распространение ошибки
+	//
+	//
+
+
+
+	return this->calcMSE(output, model);
+}
+
+
 
 double NeuralNetwork::getDendriteMultiplier() const{
 	return multiplierDistribution(generator);

@@ -26,3 +26,6 @@ void Axon::sendSignal(const double value){
 		dendrite->resendSignal(value);
 }
 
+std::shared_ptr<InputNeuron> Axon::getInputNeuron() const{
+	return this->inputNeuron;
+}

@@ -7,14 +7,19 @@
 
 class Axon;
 
-class InputNeuron : virtual protected Neuron{
+class InputNeuron : virtual public Neuron{
 protected:
 	std::shared_ptr<Axon> axon;
+
+	double errorSum;
+
 public:
 	InputNeuron(const double weight);
 	void initialize(const double value);
+	virtual void reset();
 
 	void sendSignal();
+	void getOffsetCorrection(const double offsetCorrection);
 
 	friend class NeuralNetwork;
 };

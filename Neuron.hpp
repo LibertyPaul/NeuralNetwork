@@ -5,6 +5,7 @@
 
 class Neuron{
 protected:
+	static constexpr double teachingSpeed = 1;
 	double currentSum;
 	double weight;
 

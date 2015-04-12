@@ -13,3 +13,12 @@ void InputNeuron::sendSignal(){
 	double signal = this->calcSignal();
 	this->axon->sendSignal(signal);
 }
+
+void InputNeuron::reset(){
+	this->currentSum = 0;
+	this->errorSum = 0;
+}
+
+void InputNeuron::getOffsetCorrection(const double offsetCorrection){
+	this->errorSum += offsetCorrection;
+}

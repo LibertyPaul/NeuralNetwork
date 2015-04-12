@@ -20,6 +20,7 @@ public:
 	Axon(std::shared_ptr<InputNeuron> inputNeuron);
 	void sendSignal(const double value);
 	void addConnection(std::shared_ptr<Dendrite> dendrite);
+	std::shared_ptr<InputNeuron> getInputNeuron() const;
 
 
 	friend class NeuralNetwork;

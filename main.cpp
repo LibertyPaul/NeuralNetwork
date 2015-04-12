@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 	vector<uint32_t> sizes = {
-		3, 4, 5, 2, 4, 5
+		3, 4, 3
 	};
 	NeuralNetwork nn(sizes);
 	/*
@@ -16,13 +16,15 @@ int main(){
 	cout << "Test: OK" << endl;*/
 
 
-	vector<double> initVec = {0.2, 0.5, 100500};
-	vector<double> result = nn.run(initVec);
+	vector<double> input = {0.2, 0.5, 1};
+	vector<double> output = {0.4, 1.0, 2};
+	double mse = nn.teach(input, output);
+
 	cout << nn.toString() << endl;
 
-	for(const auto v : result)
-		cout << v << ' ';
-	cout << endl;
+	cout << "MSE = " << mse << endl;
+
+
 
 	return 0;
 }

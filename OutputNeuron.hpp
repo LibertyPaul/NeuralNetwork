@@ -8,9 +8,11 @@
 
 class Dendrite;
 
-class OutputNeuron : virtual protected Neuron{
+class OutputNeuron : virtual public Neuron{
 protected:
 	std::vector<std::shared_ptr<Dendrite>> inputDendrites;
+
+	double calcError(const double model);
 
 public:
 	OutputNeuron(const double weight);
@@ -19,6 +21,8 @@ public:
 	void addDendrite(std::shared_ptr<Dendrite> dendrite);
 	void receiveSignal(const double value);
 	double getSignal() const;
+
+	void sendError(const double model);
 
 	friend class NeuralNetwork;
 };

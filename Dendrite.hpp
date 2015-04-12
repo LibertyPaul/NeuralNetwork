@@ -18,6 +18,8 @@ protected:
 public:
 	Dendrite(std::shared_ptr<OutputNeuron> outputNeuron, std::shared_ptr<Axon> axon, const double multiplier);
 	void resendSignal(const double value);
+	std::shared_ptr<InputNeuron> getInputNeuron() const;
+	void adjustMultiplier(const double diff);
 
 	bool compareOutputs(std::shared_ptr<Dendrite> dendrite) const;
 

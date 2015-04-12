@@ -38,10 +38,16 @@ protected:
 
 	IOLayersPair getLayersPair(const size_t previousLayerIndex) const;
 	void initialize(const std::vector<double> &values);
+	void reset();
+
+	double calcMSE(const std::vector<double> &output, const std::vector<double> &model) const;//MSE - mean squared error
+
 public:
 	NeuralNetwork(const std::vector<uint32_t> &layerSizes);
 
 	std::vector<double> run(const std::vector<double> &values);
+	double teach(const std::vector<double> &input, const std::vector<double> &model);
+
 
 	size_t getLayerCount() const;
 
