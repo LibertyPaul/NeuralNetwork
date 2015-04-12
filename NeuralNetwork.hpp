@@ -11,8 +11,9 @@ class InputNeuron;
 class OutputNeuron;
 class SuperNeuron;
 
+
 typedef std::pair<std::vector<std::shared_ptr<InputNeuron>>,
-				  std::vector<std::shared_ptr<OutputNeuron>>> IOLayersPair;
+				  std::vector<std::shared_ptr<OutputNeuron>>> IOLayersPair;//пара соседних слоев сети
 
 class NeuralNetwork{
 private:
@@ -32,9 +33,15 @@ protected:
 	bool checkConnectivity(std::shared_ptr<InputNeuron> inputNeuron,
 						   std::shared_ptr<OutputNeuron> outputNeuron) const;
 
+	std::vector<std::shared_ptr<InputNeuron>> getInputLayer(const size_t index) const;
+	std::vector<std::shared_ptr<OutputNeuron>> getOutputLayer(const size_t index) const;
+
 	IOLayersPair getLayersPair(const size_t previousLayerIndex) const;
+	void initialize(const std::vector<double> &values);
 public:
 	NeuralNetwork(const std::vector<uint32_t> &layerSizes);
+
+	std::vector<double> run(const std::vector<double> &values);
 
 	size_t getLayerCount() const;
 

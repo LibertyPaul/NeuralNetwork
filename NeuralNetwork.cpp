@@ -1,12 +1,17 @@
 #include <stdexcept>
 #include <type_traits>
+#include <chrono>
 #include "NeuralNetwork.hpp"
 #include "Axon.hpp"
 #include "InputNeuron.hpp"
 #include "SuperNeuron.hpp"
 #include "OutputNeuron.hpp"
 
-NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes): weightDistribution(0.0, 10.0), multiplierDistribution(0.0, 1.0){
+NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes):
+	generator(std::chrono::system_clock::now().time_since_epoch().count()),
+	weightDistribution(-0.5, 0.5),
+	multiplierDistribution(-0.5, 0.5){
+
 	if(layerSizes.size() < 2)
 		throw std::runtime_error("Incorrect NN size");
 
@@ -42,6 +47,33 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes): weightDis
 		IOLayersPair layersPair = move(this->getLayersPair(previousLayerIndex));
 		this->connectLayers(layersPair);
 	}
+}
+
+void NeuralNetwork::initialize(const std::vector<double> &values){
+	if(values.size() != this->inputLayer.size())
+		throw std::runtime_error("Incorrect initialising vector size");
+
+	for(size_t i = 0; i < values.size(); ++i){
+		this->inputLayer.at(i)->initialize(values.at(i));
+	}
+}
+
+std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
+	this->initialize(values);
+
+	size_t inputLayersCount = this->getLayerCount() - 1;
+
+	for(size_t i = 0; i < inputLayersCount; ++i)
+		for(auto inputNeuron : this->getInputLayer(i))
+			inputNeuron->sendSignal();
+
+	std::vector<double> result;
+	result.reserve(this->outputLayer.size());
+
+	for(const auto outputNeuron : this->outputLayer)
+		result.push_back(outputNeuron->getSignal());
+
+	return result;
 }
 
 double NeuralNetwork::getDendriteMultiplier() const{
@@ -115,20 +147,26 @@ size_t NeuralNetwork::getLayerCount() const{
 	return this->hiddenNeurons.size() + 2;
 }
 
-IOLayersPair NeuralNetwork::getLayersPair(const size_t previousLayerIndex) const{
-	if(previousLayerIndex == 0){
-		if(this->getLayerCount() == 2)
-			return std::make_pair(this->inputLayer, this->outputLayer);
-		else
-			return std::make_pair(this->inputLayer, superVector2OutputVector(this->hiddenNeurons.front()));
-	}
-	else if(previousLayerIndex > 0 && previousLayerIndex < this->getLayerCount() - 2)
-		return std::make_pair(superVector2InputVector(this->hiddenNeurons.at(previousLayerIndex - 1)),
-							  superVector2OutputVector(this->hiddenNeurons.at(previousLayerIndex)));
-	else if(previousLayerIndex == this->getLayerCount() - 2)//тут подразумевается, что случай при previousLayerIndex == 0 исключен в самом начале
-		return std::make_pair(superVector2InputVector(this->hiddenNeurons.back()), this->outputLayer);
+std::vector<std::shared_ptr<InputNeuron>> NeuralNetwork::getInputLayer(const size_t index) const{
+	if(index == 0)
+		return this->inputLayer;
+	else if(index < this->getLayerCount() - 1)
+		return superVector2InputVector(this->hiddenNeurons.at(index - 1));
 	else
-		throw std::runtime_error("Incorrect previousLayerIndex");
+		throw std::runtime_error("Out of range");
+}
+
+std::vector<std::shared_ptr<OutputNeuron>> NeuralNetwork::getOutputLayer(const size_t index) const{
+	if(index > 0 && index < this->getLayerCount() - 1)
+		return superVector2OutputVector(this->hiddenNeurons.at(index - 1));
+	else if(index == this->getLayerCount() - 1)
+		return this->outputLayer;
+	else
+		throw std::runtime_error("Out of range");
+}
+
+IOLayersPair NeuralNetwork::getLayersPair(const size_t previousLayerIndex) const{
+	return std::make_pair(this->getInputLayer(previousLayerIndex), this->getOutputLayer(previousLayerIndex + 1));
 }
 
 void NeuralNetwork::test() const{
@@ -148,20 +186,20 @@ std::string NeuralNetwork::toString() const{
 	std::string result;
 
 	result += std::to_string(layerNumber++) + ". ";
-	for(size_t i = 0; i < this->inputLayer.size(); ++i)
-		result += '*';
+	for(const auto neuron : this->inputLayer)
+		result += neuron->toString() + "\t";
 	result += '\n';
 
 	for(const auto hiddenLayer : this->hiddenNeurons){
 		result += std::to_string(layerNumber++) + ". ";
-		for(size_t i = 0; i < hiddenLayer.size(); ++i)
-			result += '*';
+		for(const auto neuron : hiddenLayer)
+			result += neuron->toString() + "\t";
 		result += '\n';
 	}
 
 	result += std::to_string(layerNumber++) + ". ";
-	for(size_t i = 0; i < this->outputLayer.size(); ++i)
-		result += '*';
+	for(const auto neuron :  this->outputLayer)
+		result += neuron->toString() + "\t";
 	result += '\n';
 
 	return result;

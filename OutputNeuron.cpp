@@ -13,3 +13,8 @@ void OutputNeuron::addDendrite(std::shared_ptr<Dendrite> dendrite){
 void OutputNeuron::receiveSignal(const double value){
 	this->currentSum += value;
 }
+
+
+double OutputNeuron::getSignal() const{
+	return this->currentSum;
+}

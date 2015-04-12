@@ -12,6 +12,9 @@ protected:
 	std::shared_ptr<Axon> axon;
 public:
 	InputNeuron(const double weight);
+	void initialize(const double value);
+
+	void sendSignal();
 
 	friend class NeuralNetwork;
 };

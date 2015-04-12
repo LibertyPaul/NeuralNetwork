@@ -1,6 +1,7 @@
 #ifndef NEURON_HPP
 #define NEURON_HPP
 
+#include <string>
 
 class Neuron{
 protected:
@@ -16,6 +17,7 @@ public:
 	double calcSignal() const;
 	double calcDerivativeSignal() const;
 
+	std::string toString() const;
 };
 
 #endif // NEURON_HPP

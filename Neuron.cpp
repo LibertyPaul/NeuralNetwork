@@ -22,3 +22,6 @@ double Neuron::calcDerivativeSignal() const{
 	return 0.5 * (1 - std::pow(this->calcSignal(), 2));
 }
 
+std::string Neuron::toString() const{
+	return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + " |";
+}

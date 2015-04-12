@@ -18,6 +18,7 @@ public:
 
 	void addDendrite(std::shared_ptr<Dendrite> dendrite);
 	void receiveSignal(const double value);
+	double getSignal() const;
 
 	friend class NeuralNetwork;
 };
