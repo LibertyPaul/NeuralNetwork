@@ -14,14 +14,13 @@ void Dendrite::resendSignal(const double value){
 	this->outputNeuron->receiveSignal(value * multiplier);
 }
 
+void Dendrite::resendError(const double error, const double teachingSpeed){
+	double diff = error * teachingSpeed * this->axon->getInputNeuron()->calcSignal();
+	this->axon->getInputNeuron()->getOffsetCorrection(error * this->multiplier);
+	this->multiplier += diff;
+
+}
+
 bool Dendrite::compareOutputs(std::shared_ptr<Dendrite> dendrite) const{
 	return this->outputNeuron == dendrite->outputNeuron;
-}
-
-std::shared_ptr<InputNeuron> Dendrite::getInputNeuron() const{
-	return this->axon->getInputNeuron();
-}
-
-void Dendrite::adjustMultiplier(const double diff){
-	this->multiplier += diff;
 }

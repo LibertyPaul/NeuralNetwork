@@ -11,17 +11,22 @@ Neuron::~Neuron(){
 
 void Neuron::reset(){
 	this->currentSum = 0;
+	this->errorSum = 0;
+}
+
+double Neuron::calcSignal(const double value){
+	return 1. / (1 + std::pow(M_E, -value));
 }
 
 double Neuron::calcSignal() const{
-	double x = currentSum + weight;
-	return 2. / (1 + std::pow(M_E, -x)) - 1;
+	return this->calcSignal(currentSum + weight);
 }
 
 double Neuron::calcDerivativeSignal() const{
-	return 0.5 * (1 - std::pow(this->calcSignal(), 2));
+	double t = this->calcSignal();
+	return t * (1 - t);
 }
 
 std::string Neuron::toString() const{
-	return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + " |";
+	return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
 }

@@ -15,11 +15,11 @@ protected:
 	std::shared_ptr<Axon> axon;
 	double multiplier;
 
+
 public:
 	Dendrite(std::shared_ptr<OutputNeuron> outputNeuron, std::shared_ptr<Axon> axon, const double multiplier);
 	void resendSignal(const double value);
-	std::shared_ptr<InputNeuron> getInputNeuron() const;
-	void adjustMultiplier(const double diff);
+	void resendError(const double error, const double teachingSpeed);
 
 	bool compareOutputs(std::shared_ptr<Dendrite> dendrite) const;
 

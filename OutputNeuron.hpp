@@ -12,8 +12,6 @@ class OutputNeuron : virtual public Neuron{
 protected:
 	std::vector<std::shared_ptr<Dendrite>> inputDendrites;
 
-	double calcError(const double model);
-
 public:
 	OutputNeuron(const double weight);
 	virtual ~OutputNeuron();
@@ -22,7 +20,8 @@ public:
 	void receiveSignal(const double value);
 	double getSignal() const;
 
-	void sendError(const double model);
+	void sendError(const double model);//из выходного слоя
+	void sendError();//из скрытых слоев
 
 	friend class NeuralNetwork;
 };

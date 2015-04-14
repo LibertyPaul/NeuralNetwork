@@ -7,7 +7,10 @@ class Neuron{
 protected:
 	static constexpr double teachingSpeed = 1;
 	double currentSum;
+	double errorSum;
 	double weight;
+
+	static double calcSignal(const double value);
 
 public:
 	Neuron(const double weight);

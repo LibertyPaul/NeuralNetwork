@@ -14,20 +14,24 @@ void OutputNeuron::receiveSignal(const double value){
 	this->currentSum += value;
 }
 
-
 double OutputNeuron::getSignal() const{
 	return this->currentSum;
 }
 
 void OutputNeuron::sendError(const double model){
-	double error = (model - this->currentSum) * this->calcDerivativeSignal();
+	double error = (model - this->calcSignal()) * this->calcDerivativeSignal();
 
-	double offsetCorrection = this->teachingSpeed * error;
-	for(auto dendrite : this->inputDendrites){
-		std::shared_ptr<InputNeuron> currentInputNeuron = dendrite->getInputNeuron();
-		currentInputNeuron->getOffsetCorrection(offsetCorrection);
+	for(auto dendrite : this->inputDendrites)
+		dendrite->resendError(error, this->teachingSpeed);
 
-		double diff = offsetCorrection * currentInputNeuron->calcSignal();
-		dendrite->adjustMultiplier(diff);
-	}
+	this->weight += this->teachingSpeed * error;
+}
+
+void OutputNeuron::sendError(){
+	double error = this->errorSum * this->calcDerivativeSignal();
+
+	for(auto dendrite : this->inputDendrites)
+		dendrite->resendError(error, this->teachingSpeed);
+
+	this->weight += this->teachingSpeed * error;
 }

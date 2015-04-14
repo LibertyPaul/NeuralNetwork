@@ -1,31 +1,32 @@
 #include <iostream>
+#include <ostream>
 #include <vector>
+#include <utility>
+#include <random>
+#include <chrono>
 #include "NeuralNetwork.hpp"
-
+#include "ExampleGenerator.hpp"
 using namespace std;
 
+
+
 int main(){
+	const size_t exampleSize = 3;
 	vector<uint32_t> sizes = {
-		3, 4, 3
+		exampleSize, 3, exampleSize
 	};
 	NeuralNetwork nn(sizes);
-	/*
+	ExampleGenerator eg(exampleSize);
 
-	nn.test();
+	for(size_t i = 0; i < 100000; ++i){
+		pair<vector<double>, vector<double>> src = eg.getExample();
+		cout << nn.teach(src.first, src.second) << endl;
+	}
 
-	cout << "Test: OK" << endl;*/
-
-
-	vector<double> input = {0.2, 0.5, 1};
-	vector<double> output = {0.4, 1.0, 2};
-	double mse = nn.teach(input, output);
-
-	cout << nn.toString() << endl;
-
-	cout << "MSE = " << mse << endl;
-
-
-
+	for(size_t i = 0; i < 10; ++i){
+		pair<vector<double>, vector<double>> src = eg.getExample();
+		double mse = nn.teach(src.first, src.second);
+		cout << i << endl << nn.toString() << mse << endl << endl;
+	}
 	return 0;
 }
-

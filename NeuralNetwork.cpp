@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <chrono>
+#include <algorithm>
 #include "NeuralNetwork.hpp"
 #include "Axon.hpp"
 #include "InputNeuron.hpp"
@@ -14,6 +15,8 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes):
 
 	if(layerSizes.size() < 2)
 		throw std::runtime_error("Incorrect NN size");
+	if(std::find(layerSizes.cbegin(), layerSizes.cend(), 0) != layerSizes.cend())
+		throw std::runtime_error("Empty layers in not allowed");
 
 
 	//создаем нейроны
@@ -21,7 +24,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes):
 	//входной уровень
 	uint32_t firstLayerSize = layerSizes.front();
 	for(uint32_t i = 0; i < firstLayerSize; ++i){
-		std::shared_ptr<InputNeuron> inputNeuron(new InputNeuron(this->getNeuronWeight()));
+		std::shared_ptr<InputNeuron> inputNeuron(new InputNeuron(0));//у входных нейронов смещение == 0
 		this->inputLayer.push_back(inputNeuron);
 	}
 	//скрытые уровни
@@ -81,7 +84,6 @@ double NeuralNetwork::calcMSE(const std::vector<double> &output, const std::vect
 		result += std::pow(model.at(i) - output.at(i), 2);
 	}
 	result /= model.size();
-
 	return result;
 }
 
@@ -105,15 +107,27 @@ std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
 
 
 double NeuralNetwork::teach(const std::vector<double> &input, const std::vector<double> &model){
+	std::vector<std::shared_ptr<OutputNeuron>> outputLayer = this->getOutputLayer(this->getLayerCount() - 1);
+	if(model.size() != outputLayer.size())
+		throw std::runtime_error("Incorrect model vector size");
+
 	std::vector<double> output = this->run(input);
 
-	//тут обратное распространение ошибки
-	//
-	//
+	for(size_t i = 0; i < model.size(); ++i)
+		outputLayer.at(i)->sendError(model.at(i));
+
+	for(size_t i = this->getLayerCount() - 2; i > 0; --i){
+		std::vector<std::shared_ptr<OutputNeuron>> hiddenLayer = this->getOutputLayer(i);
+
+		for(auto hiddenNeuron : hiddenLayer)
+			hiddenNeuron->sendError();
+	}
 
 
 
-	return this->calcMSE(output, model);
+	output = this->run(input);//запускаем еще раз для обновления значений
+	double mse = this->calcMSE(output, model);
+	return mse;
 }
 
 
@@ -231,11 +245,17 @@ std::string NeuralNetwork::toString() const{
 	for(const auto neuron : this->inputLayer)
 		result += neuron->toString() + "\t";
 	result += '\n';
+	for(const auto dendrite : this->inputLayer.front()->axon->dendrites)
+		result += std::to_string(dendrite->multiplier) + '\t';
+	result += '\n';
 
 	for(const auto hiddenLayer : this->hiddenNeurons){
 		result += std::to_string(layerNumber++) + ". ";
 		for(const auto neuron : hiddenLayer)
 			result += neuron->toString() + "\t";
+		result += '\n';
+		for(const auto dendrite : hiddenLayer.front()->axon->dendrites)
+			result += std::to_string(dendrite->multiplier) + '\t';
 		result += '\n';
 	}
 

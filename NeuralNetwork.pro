@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     OutputNeuron.cpp \
     Neuron.cpp \
     NeuralNetwork.cpp \
-    SuperNeuron.cpp
+    SuperNeuron.cpp \
+    ExampleGenerator.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -22,6 +23,7 @@ HEADERS += \
     Neuron.hpp \
     OutputNeuron.hpp \
     NeuralNetwork.hpp \
-    SuperNeuron.hpp
+    SuperNeuron.hpp \
+    ExampleGenerator.hpp
 
 QMAKE_CXXFLAGS += -std=c++11
