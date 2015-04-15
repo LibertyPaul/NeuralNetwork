@@ -90,17 +90,19 @@ double NeuralNetwork::calcMSE(const std::vector<double> &output, const std::vect
 std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
 	this->initialize(values);
 
-	size_t inputLayersCount = this->getLayerCount() - 1;
+	for(auto inputNeuron : this->inputLayer)
+		inputNeuron->sendRawSignal();//из 1-го уровня сигнал не преобразуется функцией
 
-	for(size_t i = 0; i < inputLayersCount; ++i)
-		for(auto inputNeuron : this->getInputLayer(i))
-			inputNeuron->sendSignal();
+	for(auto hiddenLayer : this->hiddenNeurons)
+		for(auto inputNeuron : hiddenLayer)
+			inputNeuron->sendSignal();//из остальных - преобразуется
 
 	std::vector<double> result;
 	result.reserve(this->outputLayer.size());
 
 	for(const auto outputNeuron : this->outputLayer)
-		result.push_back(outputNeuron->calcSignal());
+		//result.push_back(outputNeuron->calcSignal());
+		result.push_back(outputNeuron->currentSum + outputNeuron->weight);
 
 	return result;
 }
@@ -114,7 +116,7 @@ double NeuralNetwork::teach(const std::vector<double> &input, const std::vector<
 	std::vector<double> output = this->run(input);
 
 	for(size_t i = 0; i < model.size(); ++i)
-		outputLayer.at(i)->sendError(model.at(i));
+		this->outputLayer.at(i)->sendError(model.at(i));
 
 	for(size_t i = this->getLayerCount() - 2; i > 0; --i){
 		std::vector<std::shared_ptr<OutputNeuron>> hiddenLayer = this->getOutputLayer(i);
@@ -245,8 +247,9 @@ std::string NeuralNetwork::toString() const{
 	for(const auto neuron : this->inputLayer)
 		result += neuron->toString() + "\t";
 	result += '\n';
-	for(const auto dendrite : this->inputLayer.front()->axon->dendrites)
-		result += std::to_string(dendrite->multiplier) + '\t';
+	for(const auto neuron : this->inputLayer)
+		for(const auto dendrite : neuron->axon->dendrites)
+			result += std::to_string(dendrite->multiplier) + '\t';
 	result += '\n';
 
 	for(const auto hiddenLayer : this->hiddenNeurons){
@@ -254,8 +257,9 @@ std::string NeuralNetwork::toString() const{
 		for(const auto neuron : hiddenLayer)
 			result += neuron->toString() + "\t";
 		result += '\n';
-		for(const auto dendrite : hiddenLayer.front()->axon->dendrites)
-			result += std::to_string(dendrite->multiplier) + '\t';
+		for(const auto neuron : hiddenLayer)
+			for(const auto dendrite : neuron->axon->dendrites)
+				result += std::to_string(dendrite->multiplier) + '\t';
 		result += '\n';
 	}
 

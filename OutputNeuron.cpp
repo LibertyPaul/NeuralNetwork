@@ -19,7 +19,8 @@ double OutputNeuron::getSignal() const{
 }
 
 void OutputNeuron::sendError(const double model){
-	double error = (model - this->calcSignal()) * this->calcDerivativeSignal();
+	//double error = (model - this->calcSignal()) * this->calcDerivativeSignal();
+	double error = (model - this->currentSum - this->weight) * this->calcDerivativeSignal();
 
 	for(auto dendrite : this->inputDendrites)
 		dendrite->resendError(error, this->teachingSpeed);

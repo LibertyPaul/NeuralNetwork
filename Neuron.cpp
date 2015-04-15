@@ -15,18 +15,21 @@ void Neuron::reset(){
 }
 
 double Neuron::calcSignal(const double value){
-	return 1. / (1 + std::pow(M_E, -value));
+	//return 1. / (1 + std::pow(M_E, -value));
+	return std::tanh(value);
 }
 
 double Neuron::calcSignal() const{
-	return this->calcSignal(currentSum + weight);
+	return this->calcSignal(this->currentSum + this->weight);
 }
 
 double Neuron::calcDerivativeSignal() const{
 	double t = this->calcSignal();
-	return t * (1 - t);
+	//return t * (1 - t);
+	return 1 - std::pow(std::tanh(this->currentSum + this->weight), 2);
 }
 
 std::string Neuron::toString() const{
-	return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
+	//return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
+	return "| SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
 }

@@ -16,6 +16,7 @@ public:
 	void initialize(const double value);
 
 	void sendSignal();
+	void sendRawSignal();//костыль для 1-го уровня
 	void getOffsetCorrection(const double offsetCorrection);
 
 	friend class NeuralNetwork;

@@ -14,6 +14,10 @@ void InputNeuron::sendSignal(){
 	this->axon->sendSignal(signal);
 }
 
+void InputNeuron::sendRawSignal(){
+	this->axon->sendSignal(this->currentSum);
+}
+
 void InputNeuron::getOffsetCorrection(const double offsetCorrection){
 	this->errorSum += offsetCorrection;
 }
