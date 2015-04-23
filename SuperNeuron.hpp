@@ -8,7 +8,7 @@
 
 class SuperNeuron : public InputNeuron, public OutputNeuron{
 public:
-	SuperNeuron(const double weight);
+	SuperNeuron(const long double weight);
 
 	friend class NeuralNetwork;
 };

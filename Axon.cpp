@@ -21,7 +21,7 @@ void Axon::addConnection(std::shared_ptr<Dendrite> dendrite){
 	this->dendrites.push_back(dendrite);
 }
 
-void Axon::sendSignal(const double value){
+void Axon::sendSignal(const long double value){
 	for(const auto dendrite : dendrites)
 		dendrite->resendSignal(value);
 }

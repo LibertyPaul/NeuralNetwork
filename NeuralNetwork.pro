@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     Neuron.cpp \
     NeuralNetwork.cpp \
     SuperNeuron.cpp \
-    ExampleGenerator.cpp
+    ExampleGenerator.cpp \
+    CircularAverageCalculator.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -24,6 +25,7 @@ HEADERS += \
     OutputNeuron.hpp \
     NeuralNetwork.hpp \
     SuperNeuron.hpp \
-    ExampleGenerator.hpp
+    ExampleGenerator.hpp \
+    CircularAverageCalculator.hpp
 
 QMAKE_CXXFLAGS += -std=c++11

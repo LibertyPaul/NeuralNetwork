@@ -12,12 +12,12 @@ protected:
 	std::shared_ptr<Axon> axon;
 
 public:
-	InputNeuron(const double weight);
-	void initialize(const double value);
+	InputNeuron(const long double weight);
+	void initialize(const long double value);
 
 	void sendSignal();
 	void sendRawSignal();//костыль для 1-го уровня
-	void getOffsetCorrection(const double offsetCorrection);
+	void getOffsetCorrection(const long double offsetCorrection);
 
 	friend class NeuralNetwork;
 };

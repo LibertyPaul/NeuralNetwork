@@ -1,16 +1,17 @@
+#include <cmath>
 #include "InputNeuron.hpp"
 #include "Axon.hpp"
 
-InputNeuron::InputNeuron(const double weight):
+InputNeuron::InputNeuron(const long double weight):
 	Neuron(weight), axon(new Axon(std::shared_ptr<InputNeuron>(this))){
 }
 
-void InputNeuron::initialize(const double value){
+void InputNeuron::initialize(const long double value){
 	this->currentSum = value;
 }
 
 void InputNeuron::sendSignal(){
-	double signal = this->calcSignal();
+	long double signal = this->calcSignal();
 	this->axon->sendSignal(signal);
 }
 
@@ -18,6 +19,6 @@ void InputNeuron::sendRawSignal(){
 	this->axon->sendSignal(this->currentSum);
 }
 
-void InputNeuron::getOffsetCorrection(const double offsetCorrection){
+void InputNeuron::getOffsetCorrection(const long double offsetCorrection){
 	this->errorSum += offsetCorrection;
 }

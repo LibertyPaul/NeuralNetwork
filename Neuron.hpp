@@ -5,21 +5,23 @@
 
 class Neuron{
 protected:
-	static constexpr double teachingSpeed = 0.001;
-	double currentSum;
-	double errorSum;
-	double weight;
+	static constexpr long double teachingSpeed = 0.001;
+	long double currentSum;
+	long double errorSum;
+	long double weight;
 
-	static double calcSignal(const double value);
+	static long double calcSignal(const long double value);
+	static long double calcDerivativeSignal(const long double value);
 
 public:
-	Neuron(const double weight);
+	Neuron(const long double weight);
 	virtual ~Neuron();
 
 	void reset();
-	void recieveSignal(const double value);
-	double calcSignal() const;
-	double calcDerivativeSignal() const;
+	void recieveSignal(const long double value);
+	long double getCurrentValue() const;
+	long double calcSignal() const;
+	long double calcDerivativeSignal() const;
 
 	std::string toString() const;
 };

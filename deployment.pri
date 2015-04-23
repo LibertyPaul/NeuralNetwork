@@ -189,3 +189,7 @@ export (LIBS)
 export (QMAKE_EXTRA_TARGETS)
 }
 
+HEADERS +=
+
+SOURCES +=
+

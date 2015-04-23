@@ -1,7 +1,7 @@
 #include "Neuron.hpp"
 #include <cmath>
 
-Neuron::Neuron(const double weight){
+Neuron::Neuron(const long double weight){
 	this->weight = weight;
 	reset();
 }
@@ -14,22 +14,28 @@ void Neuron::reset(){
 	this->errorSum = 0;
 }
 
-double Neuron::calcSignal(const double value){
-	//return 1. / (1 + std::pow(M_E, -value));
+long double Neuron::getCurrentValue() const{
+	return this->currentSum + this->weight;
+}
+
+long double Neuron::calcSignal(const long double value){
 	return std::tanh(value);
+	//return value;
 }
 
-double Neuron::calcSignal() const{
-	return this->calcSignal(this->currentSum + this->weight);
+long double Neuron::calcDerivativeSignal(const long double value){
+	return (1 - std::pow(std::tanh(value), 2));
+	//return 1;
 }
 
-double Neuron::calcDerivativeSignal() const{
-	double t = this->calcSignal();
-	//return t * (1 - t);
-	return 1 - std::pow(std::tanh(this->currentSum + this->weight), 2);
+long double Neuron::calcSignal() const{
+	return this->calcSignal(this->getCurrentValue());
+}
+
+long double Neuron::calcDerivativeSignal() const{
+	return this->calcDerivativeSignal(this->getCurrentValue());
 }
 
 std::string Neuron::toString() const{
-	//return "| WHT = " + std::to_string(this->weight) + "; SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
-	return "| SUM = " + std::to_string(this->currentSum) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
+	return "| VAL = " + std::to_string(this->getCurrentValue()) + "; FUNC = " + std::to_string(this->calcSignal()) + " |";
 }

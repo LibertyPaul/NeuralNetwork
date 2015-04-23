@@ -52,7 +52,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint32_t> &layerSizes):
 	}
 }
 
-void NeuralNetwork::initialize(const std::vector<double> &values){
+void NeuralNetwork::initialize(const std::vector<long double> &values){
 	if(values.size() != this->inputLayer.size())
 		throw std::runtime_error("Incorrect initialising vector size");
 
@@ -75,11 +75,35 @@ void NeuralNetwork::reset(){
 
 }
 
-double NeuralNetwork::calcMSE(const std::vector<double> &output, const std::vector<double> &model) const{
+std::vector<long double> NeuralNetwork::minmaxNoramalization(const std::vector<long double> &src) const{
+	const long double tMin = -1, tMax = 1;
+	std::vector<long double> result;
+	if(src.size() == 0)
+		return result;
+	if(src.size() == 1){
+		result.push_back(0);
+		return result;
+	}
+
+	auto srcMinmax = std::minmax_element(src.cbegin(), src.cend());
+
+	long double dAbs = std::abs(*srcMinmax.second) - std::abs(*srcMinmax.first);
+	long double multiplier = (tMax - tMin) / (*srcMinmax.second - *srcMinmax.first);
+
+
+	result.reserve(src.size());
+
+	for(const auto value : src)
+		result.push_back((value - dAbs) * multiplier);
+
+	return result;
+}
+
+long double NeuralNetwork::calcMSE(const std::vector<long double> &output, const std::vector<long double> &model) const{
 	if(output.size() != model.size())
 		throw std::runtime_error("different vector sizes");
 
-	double result = 0;
+	long double result = 0;
 	for(size_t i = 0; i < model.size(); ++i){
 		result += std::pow(model.at(i) - output.at(i), 2);
 	}
@@ -87,7 +111,8 @@ double NeuralNetwork::calcMSE(const std::vector<double> &output, const std::vect
 	return result;
 }
 
-std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
+std::vector<long double> NeuralNetwork::run(const std::vector<long double> &values){
+	//std::vector<long double> normalized = this->minmaxNoramalization(values);
 	this->initialize(values);
 
 	for(auto inputNeuron : this->inputLayer)
@@ -97,23 +122,24 @@ std::vector<double> NeuralNetwork::run(const std::vector<double> &values){
 		for(auto inputNeuron : hiddenLayer)
 			inputNeuron->sendSignal();//из остальных - преобразуется
 
-	std::vector<double> result;
+	std::vector<long double> result;
 	result.reserve(this->outputLayer.size());
 
-	for(const auto outputNeuron : this->outputLayer)
-		//result.push_back(outputNeuron->calcSignal());
-		result.push_back(outputNeuron->currentSum + outputNeuron->weight);
+	for(const auto outputNeuron : this->outputLayer){
+		result.push_back(outputNeuron->calcSignal());
+	}
 
 	return result;
 }
 
 
-double NeuralNetwork::teach(const std::vector<double> &input, const std::vector<double> &model){
+long double NeuralNetwork::teach(const std::vector<long double> &input, const std::vector<long double> &model){
 	std::vector<std::shared_ptr<OutputNeuron>> outputLayer = this->getOutputLayer(this->getLayerCount() - 1);
 	if(model.size() != outputLayer.size())
 		throw std::runtime_error("Incorrect model vector size");
+	//std::vector<long double> normalizedModel = this->minmaxNoramalization(model);
 
-	std::vector<double> output = this->run(input);
+	std::vector<long double> output = this->run(input);
 
 	for(size_t i = 0; i < model.size(); ++i)
 		this->outputLayer.at(i)->sendError(model.at(i));
@@ -128,17 +154,17 @@ double NeuralNetwork::teach(const std::vector<double> &input, const std::vector<
 
 
 	output = this->run(input);//запускаем еще раз для обновления значений
-	double mse = this->calcMSE(output, model);
+	long double mse = this->calcMSE(output, model);
 	return mse;
 }
 
 
 
-double NeuralNetwork::getDendriteMultiplier() const{
+long double NeuralNetwork::getDendriteMultiplier() const{
 	return multiplierDistribution(generator);
 }
 
-double NeuralNetwork::getNeuronWeight() const{
+long double NeuralNetwork::getNeuronWeight() const{
 	return weightDistribution(generator);
 }
 
@@ -266,6 +292,11 @@ std::string NeuralNetwork::toString() const{
 	result += std::to_string(layerNumber++) + ". ";
 	for(const auto neuron :  this->outputLayer)
 		result += neuron->toString() + "\t";
+	result += '\n';
+
+	result += "RESULT: ";
+	for(const auto neuron : this->outputLayer)
+		result += std::to_string(neuron->calcSignal()) + " ";
 	result += '\n';
 
 	return result;

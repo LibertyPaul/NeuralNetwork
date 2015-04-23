@@ -13,14 +13,14 @@ protected:
 	std::vector<std::shared_ptr<Dendrite>> inputDendrites;
 
 public:
-	OutputNeuron(const double weight);
+	OutputNeuron(const long double weight);
 	virtual ~OutputNeuron();
 
 	void addDendrite(std::shared_ptr<Dendrite> dendrite);
-	void receiveSignal(const double value);
-	double getSignal() const;
+	void receiveSignal(const long double value);
+	long double getSignal() const;
 
-	void sendError(const double model);//из выходного слоя
+	void sendError(const long double model);//из выходного слоя
 	void sendError();//из скрытых слоев
 
 	friend class NeuralNetwork;

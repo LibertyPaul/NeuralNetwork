@@ -18,7 +18,7 @@ protected:
 	bool isConnected(std::shared_ptr<Dendrite> dendrite) const;
 public:
 	Axon(std::shared_ptr<InputNeuron> inputNeuron);
-	void sendSignal(const double value);
+	void sendSignal(const long double value);
 	void addConnection(std::shared_ptr<Dendrite> dendrite);
 	std::shared_ptr<InputNeuron> getInputNeuron() const;
 
